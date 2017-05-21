@@ -1,5 +1,4 @@
-import java.util.*;
-import edu.princeton.cs.algs4.*;
+import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 public class PercolationStats {
@@ -30,7 +29,6 @@ public class PercolationStats {
 
             threshold[i] = (double) openCount / (N * N);
             openCount = 0;
-            //System.out.printf("threshold[%03d] = %f\n", i, threshold[i]);
         }
     }
 
@@ -65,7 +63,7 @@ public class PercolationStats {
 
         System.out.printf("mean                     = %f\n", pls.mean());
         System.out.printf("stddev                   = %f\n", pls.stddev());
-        System.out.printf("95%% confidence Interval  = %f, %f\n",
+        System.out.printf("95%% confidence Interval  = [%f, %f]\n",
                 pls.confidenceLo(), pls.confidenceHi());
     }
 }

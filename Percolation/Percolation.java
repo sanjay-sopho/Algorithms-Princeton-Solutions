@@ -1,56 +1,51 @@
-import java.util.*;
-import edu.princeton.cs.algs4.*;
+import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 public class Percolation {
     
     private WeightedQuickUnionUF grid, auxGrid;
     private boolean[]   state;
-    private int     N;
+    private int numberOfColumns ;
 
-    // create N-by-N grid, with all sites blocked
-    public Percolation(int N) {
+    // creates numberOfColumns  X numberOfColumns  grid, with all sites blocked intially
+    public Percolation(int numberOfColumns ) {
 
-        int siteCount = N * N;
-        this.N = N;
+        int numberOfSites = numberOfColumns  * numberOfColumns ;
+        this.numberOfColumns  = numberOfColumns ;
 
-        // index 0 and N^2+1 are reserved for virtual top and bottom sites
-        grid    = new WeightedQuickUnionUF(siteCount + 2);
-        auxGrid = new WeightedQuickUnionUF(siteCount + 1);
-        state   = new boolean[siteCount + 2];
+        // virtual top and bottom sites
+        grid    = new WeightedQuickUnionUF(numberOfSites + 2);
+        auxGrid = new WeightedQuickUnionUF(numberOfSites + 1);
+        state   = new boolean[numberOfSites + 2];
 
-        // Initialize all sites to be blocked.
-        for (int i = 1; i <= siteCount; i++)
+        // Blocking all sites initially
+        for (int i = 1; i <= numberOfSites; i++)
             state[i] = false;
         // Initialize virtual top and bottom site with open state
         state[0] = true;
-        state[siteCount+1] = true;
+        state[numberOfSites+1] = true;
     }
 
     // return array index of given row i and column j
     private int xyToIndex(int i, int j) {
-        // Attention: i and j are of range 1 ~ N, NOT 0 ~ N-1.
-        // Throw IndexOutOfBoundsException if i or j is not valid
-        if (i <= 0 || i > N) 
+        if (i <= 0 || i > numberOfColumns ) 
             throw new IndexOutOfBoundsException("row i out of bound");
-        if (j <= 0 || j > N) 
+        if (j <= 0 || j > numberOfColumns ) 
             throw new IndexOutOfBoundsException("column j out of bound");
 
-        return (i - 1) * N + j;
+        return (i - 1) * numberOfColumns  + j;
     }
 
     private boolean isTopSite(int index) {
-        return index <= N;
+        return index <=  numberOfColumns ;
     }
 
     private boolean isBottomSite(int index) {
-        return index >= (N - 1) * N + 1;
+        return index >= (numberOfColumns - 1) * numberOfColumns + 1;
     }
 
-    // open site (row i, column j) if it is not already
+    // open site i,j
     public void open(int i, int j) {
-        // All input sites are blocked at first. 
-        // Check the state of site before invoking this method.
         int idx = xyToIndex(i, j);
         state[idx] = true;
 
@@ -60,7 +55,7 @@ public class Percolation {
             grid.union(idx, xyToIndex(i-1, j));
             auxGrid.union(idx, xyToIndex(i-1, j));
         }
-        if (i != N && isOpen(i+1, j)) {
+        if (i != numberOfColumns  && isOpen(i+1, j)) {
             grid.union(idx, xyToIndex(i+1, j));
             auxGrid.union(idx, xyToIndex(i+1, j));
         }
@@ -68,7 +63,7 @@ public class Percolation {
             grid.union(idx, xyToIndex(i, j-1));
             auxGrid.union(idx, xyToIndex(i, j-1));
         }
-        if (j != N && isOpen(i, j+1)) {
+        if (j != numberOfColumns  && isOpen(i, j+1)) {
             grid.union(idx, xyToIndex(i, j+1));
             auxGrid.union(idx, xyToIndex(i, j+1));
         }
@@ -80,20 +75,20 @@ public class Percolation {
         if (isBottomSite(idx))  grid.union(state.length-1, idx);
     }
 
-    // is site (row i, column j) open?
+    // if site is pen
     public boolean isOpen(int i, int j) {
         int idx = xyToIndex(i, j);
         return state[idx];
     }
 
-    // is site (row i, column j) full?
+    // if site is full
     public boolean isFull(int i, int j) {
         // Check if this site is connected to virtual top site
         int idx = xyToIndex(i, j);
         return grid.connected(0, idx) && auxGrid.connected(0, idx);
     }
 
-    // does the system percolate?
+    // if percolation occurs
     public boolean percolates() {
         // Check whether virtual top and bottom sites are connected
         return grid.connected(0, state.length-1);
