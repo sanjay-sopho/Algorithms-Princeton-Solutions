@@ -1,34 +1,35 @@
+/* PercolationStats.java
+ * run with an input like java PercolationStats 200 100
+ * it gives statistics on the monte carlo simulations 
+ */
+ 
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
-import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 public class PercolationStats {
     
     private double[]    threshold;
 
-    // perform T independent computational experiments on an N-by-N grid
-    public PercolationStats(int N, int T) {
+    // perform t independent computational experiments on an n-by-n grid
+    public PercolationStats(int n, int t) {
 
         int openCount, row, column;
 
-        if (N <= 0 || T <= 0)
+        if (n <= 0 || t <= 0)
             throw new IllegalArgumentException("Arguments out of bound");
 
-        threshold = new double[T];
+        threshold = new double[t];
         
-        openCount = 0;
-        for (int i = 0; i < T; i++) {
-            Percolation pl = new Percolation(N);
+        for (int i = 0; i < t; i++) {
+            Percolation pl = new Percolation(n);
             do {
-                row     = StdRandom.uniform(1, N+1);
-                column  = StdRandom.uniform(1, N+1);
+                row     = StdRandom.uniform(1, n+1);
+                column  = StdRandom.uniform(1, n+1);
                 if (pl.isOpen(row, column))
                     continue;
                 pl.open(row, column);
-                openCount++;
             } while (!pl.percolates());
 
-            threshold[i] = (double) openCount / (N * N);
-            openCount = 0;
+            threshold[i] = (double) pl.numberOfOpenSites() / (n * n);
         }
     }
 

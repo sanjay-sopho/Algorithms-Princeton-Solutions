@@ -1,17 +1,15 @@
-import edu.princeton.cs.algs4.StdRandom;
-import edu.princeton.cs.algs4.StdStats;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 public class Percolation {
     
     private WeightedQuickUnionUF grid, auxGrid;
     private boolean[]   state;
-    private int numberOfColumns ;
+    private int numberOfColumns;
 
     // creates numberOfColumns  X numberOfColumns  grid, with all sites blocked intially
-    public Percolation(int numberOfColumns ) {
+    public Percolation(int numberOfColumns) {
 
-        int numberOfSites = numberOfColumns  * numberOfColumns ;
-        this.numberOfColumns  = numberOfColumns ;
+        int numberOfSites = numberOfColumns  * numberOfColumns;
+        this.numberOfColumns  = numberOfColumns;
 
         // virtual top and bottom sites
         grid    = new WeightedQuickUnionUF(numberOfSites + 2);
@@ -28,20 +26,30 @@ public class Percolation {
 
     // return array index of given row i and column j
     private int xyToIndex(int i, int j) {
-        if (i <= 0 || i > numberOfColumns ) 
+        if (i <= 0 || i > numberOfColumns) 
             throw new IndexOutOfBoundsException("row i out of bound");
-        if (j <= 0 || j > numberOfColumns ) 
+        if (j <= 0 || j > numberOfColumns) 
             throw new IndexOutOfBoundsException("column j out of bound");
 
         return (i - 1) * numberOfColumns  + j;
     }
-
+    
     private boolean isTopSite(int index) {
-        return index <=  numberOfColumns ;
+        return index <=  numberOfColumns;
     }
 
     private boolean isBottomSite(int index) {
         return index >= (numberOfColumns - 1) * numberOfColumns + 1;
+    }
+
+    // return number of open sites
+    public int numberOfOpenSites() {
+        int openSites = 0;
+        for (int i = 1; i < numberOfColumns*numberOfColumns+1; i++) {
+            if (state[i])
+                openSites++;
+        } 
+        return openSites;
     }
 
     // open site i,j
@@ -75,15 +83,14 @@ public class Percolation {
         if (isBottomSite(idx))  grid.union(state.length-1, idx);
     }
 
-    // if site is pen
+    // check if site is open
     public boolean isOpen(int i, int j) {
         int idx = xyToIndex(i, j);
         return state[idx];
     }
 
-    // if site is full
+    // check if site is connected to virtual top
     public boolean isFull(int i, int j) {
-        // Check if this site is connected to virtual top site
         int idx = xyToIndex(i, j);
         return grid.connected(0, idx) && auxGrid.connected(0, idx);
     }
